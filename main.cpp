@@ -101,6 +101,19 @@ void DrawShape(Shape* shape) {
     }
 }
 
+bool CheckCollisionShape(Shape* shape) {
+    switch (shape->type) {
+        case ShapeType::kCircle:
+            return CheckCollisionPointCircle({static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())}, static_cast<Circle*>(shape)->focus, static_cast<Circle*>(shape)->radius);
+        case ShapeType::kSquare:
+            return CheckCollisionPointRec({static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())}, {static_cast<Square*>(shape)->position.x, static_cast<Square*>(shape)->position.y, static_cast<Square*>(shape)->size.x, static_cast<Square*>(shape)->size.y});
+        case ShapeType::kTriangle:
+            return CheckCollisionPointTriangle({static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())}, static_cast<Triangle*>(shape)->verticies[0], static_cast<Triangle*>(shape)->verticies[1], static_cast<Triangle*>(shape)->verticies[2]);
+        default:
+            return false;
+    }
+}
+
 int main()
 {
     const int kScreenWidth = 1200;
@@ -130,6 +143,11 @@ int main()
         }
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            if (CheckCollisionShape(shape)) {
+                score++;
+                delete shape;
+                shape = generateRandomShape(kScreenWidth, kScreenHeight);
+            }
             // if (CheckCollisionPointCircle({static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())}, shape.position, shape.size)) {
             //     TraceLog(LOG_INFO, "Clicked in circle!");
             //     score++;
