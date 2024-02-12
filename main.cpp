@@ -21,7 +21,7 @@ int main()
     const int kInfoAreaX = 0;
     const int kInfoAreaY = 100;
     const int kFPS = 60;
-    const int kTime = 30;
+    const int kStartTime = 30;
     const int kScoreColor = 50;
     const int kWarningTime = 5;
     // --------------------------------------------------------------------
@@ -33,7 +33,7 @@ int main()
     Shape *shape = sm.GenerateRandomShape();
     int score = 0;
     int framesCounter = 0;
-    int time = kTime;
+    int time = kStartTime;
     bool exitWindow = false;
     // --------------------------------------------------------------------
 
@@ -108,6 +108,8 @@ int main()
                 if (CheckCollisionPointRec({static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())},
                                            kCountdownButton))
                 {
+                    time = kStartTime;
+                    framesCounter = 0;
                     state = kGameModeCountdown;
                 }
                 // --------------------------------------------------------------------
@@ -127,11 +129,7 @@ int main()
         case kGameModeCountdown: {
             if (time < 1)
             {
-                DrawText("Game Over!", kScreenWidth / 2 - 100, kScreenHeight / 2 - 50, 80, WHITE);
-                DrawText(TextFormat("Final Score: %i", score), kScreenWidth / 2 - 100, kScreenHeight / 2 + 50, 60,
-                         WHITE);
-                EndDrawing();
-                continue;
+                state = kGameModeCountdownEnd;
             }
             else
             {
@@ -164,6 +162,77 @@ int main()
                 DrawText(TextFormat("Time: %i", time), 850, 10, 80, timeColor);
                 // --------------------------------------------------------------------
             }
+            break;
+        }
+        case kGameModeCountdownEnd: {
+            const char *kGameOverText = "Game Over!";
+            const char *kFinalScoreText = TextFormat("Final Score: %i", score);
+            const char *kRestartText = "Restart";
+            const char *kBackToTitleText = "Back to Title";
+            const char *kExitText = "Exit";
+
+            const int kGameOverSize = 80;
+            const int kFinalScoreSize = 70;
+            const int kEndMenuSize = 60;
+
+            const Rectangle kRestartButton = {
+                static_cast<float>(kScreenWidth / 2 - MeasureText(kRestartText, kEndMenuSize) / 2),
+                static_cast<float>(kScreenHeight / 2 + 50), static_cast<float>(MeasureText(kRestartText, kEndMenuSize)),
+                static_cast<float>(kEndMenuSize)};
+
+            const Rectangle kBackToTitleButton = {
+                static_cast<float>(kScreenWidth / 2 - MeasureText(kBackToTitleText, kEndMenuSize) / 2),
+                static_cast<float>(kScreenHeight / 2 + 150), static_cast<float>(MeasureText(kBackToTitleText, kEndMenuSize)),
+                static_cast<float>(kEndMenuSize)};
+
+            const Rectangle kExitButton = {
+                static_cast<float>(kScreenWidth / 2 - MeasureText(kExitText, kEndMenuSize) / 2),
+                static_cast<float>(kScreenHeight / 2 + 250), static_cast<float>(MeasureText(kExitText, kEndMenuSize)),
+                static_cast<float>(kEndMenuSize)};
+
+            DrawText(kGameOverText, kScreenWidth / 2 - MeasureText(kGameOverText, kGameOverSize) / 2,
+                     kScreenHeight / 2 - 200, kGameOverSize, WHITE);
+            DrawText(kFinalScoreText, kScreenWidth / 2 - MeasureText(kFinalScoreText, kFinalScoreSize) / 2,
+                     kScreenHeight / 2 + -100, kFinalScoreSize, WHITE);
+            DrawText(kRestartText, kRestartButton.x, kRestartButton.y, kEndMenuSize, WHITE);
+            DrawText(kBackToTitleText, kBackToTitleButton.x, kBackToTitleButton.y, kEndMenuSize, WHITE);
+            DrawText(kExitText, kExitButton.x, kExitButton.y, kEndMenuSize, WHITE);
+
+            // Start menu input
+            // --------------------------------------------------------------------
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            {
+                // Countdown button
+                // --------------------------------------------------------------------
+                if (CheckCollisionPointRec({static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())},
+                                           kRestartButton))
+                {
+                    time = kStartTime;
+                    framesCounter = 0;
+                    state = kGameModeCountdown;
+                }
+                // --------------------------------------------------------------------
+
+                // Back to title button
+                // --------------------------------------------------------------------
+                if (CheckCollisionPointRec({static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())},
+                                           kBackToTitleButton))
+                {
+                    state = kStartMenu;
+                }
+                // --------------------------------------------------------------------
+
+                // Exit button
+                // --------------------------------------------------------------------
+                if (CheckCollisionPointRec({static_cast<float>(GetMouseX()), static_cast<float>(GetMouseY())},
+                                           kExitButton))
+                {
+                    exitWindow = true;
+                }
+                // --------------------------------------------------------------------
+            }
+            // --------------------------------------------------------------------
+
             break;
         }
         }
