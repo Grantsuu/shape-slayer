@@ -111,6 +111,7 @@ int main()
                     time = kStartTime;
                     framesCounter = 0;
                     state = kGameModeCountdown;
+                    score = 0;
                 }
                 // --------------------------------------------------------------------
 
@@ -210,6 +211,7 @@ int main()
                     time = kStartTime;
                     framesCounter = 0;
                     state = kGameModeCountdown;
+                    score = 0;
                 }
                 // --------------------------------------------------------------------
 
